@@ -1,0 +1,8 @@
+[build]
+  # No build command needed for static HTML/JS
+  command = ""
+  # Publish the root directory
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
