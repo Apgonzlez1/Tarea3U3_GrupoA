@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Quiz Rápido: El Duelo de Conocimiento</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+</head>
+<body>
+    <!-- Partículas de fondo -->
+    <div class="particles"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="main-title">
+                <span class="brain-icon">🧠</span>
+                Quiz Rápido: El Duelo de Conocimiento
+                <span class="lightning-icon">⚡</span>
+            </h1>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span id="statusText">Conectando...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor principal -->
+    <main class="main-container">
+        <!-- Panel de registro/login -->
+        <div class="registration-panel" id="registrationPanel">
+            <div class="welcome-card">
+                <div class="welcome-icon">👋</div>
+                <h2>¡Bienvenido al Quiz!</h2>
+                <p>Ingresa tu nombre para comenzar</p>
+                <div class="input-group">
+                    <input type="text" id="nombreUsuario" placeholder="Tu nombre" maxlength="20">
+                    <button id="btnRegistrarse" class="btn-primary">
+                        <span>🚀</span>
+                        Entrar al Quiz
+                    </button>
+                </div>
+                <div class="tip">
+                    💡 <strong>Tip:</strong> Si eres docente, escribe "docente" como nombre
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel del juego -->
+        <div class="game-panel" id="gamePanel" style="display: none;">
+            <!-- Panel del docente -->
+            <div class="teacher-panel" id="teacherPanel" style="display: none;">
+                <div class="panel-card teacher-card">
+                    <h3>
+                        <span>👨‍🏫</span>
+                        Panel del Docente
+                    </h3>
+                    <form id="formPregunta" class="question-form">
+                        <div class="input-group">
+                            <label for="textoPregunta">📝 Pregunta:</label>
+                            <textarea 
+                                id="textoPregunta" 
+                                placeholder="Escribe tu pregunta aquí..."
+                                rows="3"
+                                maxlength="200"
+                                required
+                            ></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="respuestaCorrecta">✅ Respuesta Correcta:</label>
+                            <input 
+                                type="text" 
+                                id="respuestaCorrecta" 
+                                placeholder="Respuesta correcta"
+                                maxlength="50"
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn-primary btn-large">
+                            <span>📢</span>
+                            Publicar Pregunta
+                        </button>
+                    </form>
+                    
+                    <div class="teacher-actions">
+                        <button id="btnReiniciar" class="btn-secondary">
+                            <span>🔄</span>
+                            Reiniciar Juego
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel del estudiante -->
+            <div class="student-panel" id="studentPanel">
+                <!-- Area de la pregunta -->
+                <div class="question-area" id="questionArea">
+                    <div class="no-question" id="noQuestion">
+                        <div class="waiting-icon">⏳</div>
+                        <h3>Esperando pregunta...</h3>
+                        <p>El docente publicará una pregunta pronto</p>
+                    </div>
+                    
+                    <div class="question-card" id="questionCard" style="display: none;">
+                        <div class="question-header">
+                            <span class="question-icon">❓</span>
+                            <h3>Pregunta Actual</h3>
+                            <div class="question-timer" id="questionTimer"></div>
+                        </div>
+                        <div class="question-text" id="questionText"></div>
+                        <div class="question-meta">
+                            <span id="questionAuthor">👨‍🏫 Docente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Area de respuesta -->
+                <div class="answer-area" id="answerArea">
+                    <div class="answer-card">
+                        <h4>
+                            <span>💭</span>
+                            Tu Respuesta
+                        </h4>
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="respuestaUsuario" 
+                                placeholder="Escribe tu respuesta..."
+                                maxlength="50"
+                                disabled
+                            >
+                            <button id="btnEnviarRespuesta" class="btn-primary" disabled>
+                                <span>📤</span>
+                                Enviar
+                            </button>
+                        </div>
+                        <div class="answer-feedback" id="answerFeedback"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultado de la ronda -->
+            <div class="result-area" id="resultArea" style="display: none;">
+                <div class="winner-card">
+                    <div class="winner-animation">
+                        <div class="trophy">🏆</div>
+                        <div class="confetti">🎉</div>
+                    </div>
+                    <h3 id="winnerMessage">¡Tenemos un ganador!</h3>
+                    <div class="winner-name" id="winnerName"></div>
+                    <div class="correct-answer" id="correctAnswer"></div>
+                    <button id="btnNuevaPregunta" class="btn-primary">
+                        <span>🔄</span>
+                        Esperando nueva pregunta...
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de estadísticas -->
+            <div class="stats-panel">
+                <div class="stats-card">
+                    <h4>
+                        <span>📊</span>
+                        Estadísticas
+                    </h4>
+                    <div class="stats-content">
+                        <div class="stat-item">
+                            <span class="stat-label">👥 Conectados:</span>
+                            <span class="stat-value" id="connectedCount">0</span>
+                        </div>
+                        <div class="leaderboard" id="leaderboard"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notificaciones Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    <script src="script.js"></script>
+
+    <!-- Efectos de partículas -->
+    <script>
+        // Crear partículas animadas
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Inicializar partículas cuando carga la página
+        document.addEventListener('DOMContentLoaded', createParticles);
+    </script>
+</body>
+</html>
