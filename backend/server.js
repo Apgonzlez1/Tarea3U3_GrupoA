@@ -8,14 +8,13 @@ const app = express();
 const server = http.createServer(app);
 
 // Configuración de CORS para Socket.io
-const io = socketIo(server, {
-    cors: {
-        origin: process.env.FRONTEND_URL || "http://localhost:3000",
-        methods: ["GET", "POST"],
-        credentials: true
-    }
-});
-
+const cors = require('cors');
+app.use(cors({
+  origin: [
+    'http://localhost:3000', 
+    'https://tu-app-netlify.netlify.app' // Cambia por tu URL de Netlify
+  ]
+}));
 // Middleware
 app.use(cors());
 app.use(express.json());
