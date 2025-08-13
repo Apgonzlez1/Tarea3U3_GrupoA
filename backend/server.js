@@ -7,16 +7,26 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// Configuración de CORS para Socket.io
-const cors = require('cors');
+// Configuración de Socket.io con CORS
+const io = socketIo(server, {
+    cors: {
+        origin: [
+            'http://localhost:3000', 
+            'https://splendorous-churros-b55743.netlify.app'
+        ],
+        methods: ["GET", "POST"]
+    }
+});
+
+// Configuración de CORS para Express
 app.use(cors({
-  origin: [
-    'http://localhost:3000', 
-    'https://tu-app-netlify.netlify.app' // Cambia por tu URL de Netlify
-  ]
+    origin: [
+        'http://localhost:3000', 
+        'https://splendorous-churros-b55743.netlify.app'
+    ]
 }));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Variables globales del juego
@@ -119,7 +129,7 @@ io.on('connection', (socket) => {
             // Anunciar al ganador a todos los clientes
             io.emit('ronda:terminada', {
                 ganador: nombreUsuario,
-                respuestaCorrecta: data.respuesta || respuestaCorrectaActual,
+                respuestaCorrecta: respuestaCorrectaActual,
                 timestamp: Date.now(),
                 nuevoPuntaje: estadisticas.get(nombreUsuario)
             });
@@ -159,7 +169,7 @@ io.on('connection', (socket) => {
     socket.on('juego:reiniciar', () => {
         const nombreUsuario = usuariosConectados.get(socket.id);
         
-        if (nombreUsuario && nombreUsuario.toLowerCase() === 'docente') {
+        if (nombreUsuario && nombreUsuario.toLowerCase().includes('docente')) {
             // Reiniciar variables del juego
             respuestaCorrectaActual = '';
             preguntaActual = '';
@@ -188,8 +198,19 @@ app.get('/health', (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Servidor de juego de preguntas funcionando correctamente',
+        endpoints: {
+            health: '/health',
+            socket: 'ws://localhost:' + PORT
+        }
+    });
+});
+
 // Iniciar servidor
 server.listen(PORT, () => {
     console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
-    console.log(`🌐 Configurado para frontend: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+    console.log(`🌐 Socket.io configurado para CORS`);
+    console.log(`🔗 Conexión: http://localhost:${PORT}`);
 });
