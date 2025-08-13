@@ -4,5 +4,9 @@
   # Publish the root directory
   publish = "."
 
+# Disable all build plugins
 [build.environment]
   NODE_VERSION = "18"
+
+# Explicitly disable extensions
+[[plugins]]
